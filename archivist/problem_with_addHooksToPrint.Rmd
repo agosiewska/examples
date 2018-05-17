@@ -30,5 +30,11 @@ ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
 
 ```{r}
 print(ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
-  geom_point()) 
+   geom_point()) 
 ```
+
+
+```{r, results='markup'}
+sessionInfo()
+```
+
