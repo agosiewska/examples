@@ -1,0 +1,34 @@
+---
+title: "archivist problem with addHooksToPrint"
+
+output: html_document
+---
+
+
+```{r}
+library(archivist)
+library(ggplot2)
+
+knitr::opts_chunk$set(comment=NA, results='asis', warning=FALSE, message=FALSE, cache=FALSE)
+
+# store everything in the archivist repo
+addHooksToPrint(class="ggplot",
+                 repoDir = "arepo", 
+                 repo = NULL, 
+                 user = "dont_work_without_user")
+```
+
+# plot without print and without hook
+
+```{r}
+data(iris)
+ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
+  geom_point() 
+```
+
+# plot with print and with hook
+
+```{r}
+print(ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
+  geom_point()) 
+```
