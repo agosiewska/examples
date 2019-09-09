@@ -11,11 +11,9 @@ knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
-Machine learning is a hot topic nowadays, thus there is no need to convince anyone about its usefulness. ML models are successfully applied in biology, medicine, and finance. With modern software, it is easy to train even a complex model that fits the training data and results in high accuracy on the test set. The problem arises when poorly verified model fails confronted with real-world data.
+Machine learning is a hot topic nowadays, thus there is no need to convince anyone about its usefulness. ML models are successfully applied in biology, medicine, finance, and so on. With modern software, it is easy to train even a complex model that fits the training data and results in high accuracy on the test set. The problem arises when poorly verified model fails confronted with real-world data.
 
-In this post, we describe  [`auditor`](https://github.com/ModelOriented/auditor) package for visual auditing of **residuals** of machine learning models. 
-A residual is the difference between the observed value and the value predicted by a model. 
-The auditor provides methods for model verification and validation by error analysis. It helps in finding answers to questions that may be crucial in deeper analyses.
+In this post, we describe [`auditor`](https://github.com/ModelOriented/auditor) package for visual auditing of **residuals** of machine learning models. A residual is the difference between the observed value and the value predicted by a model. The auditor provides methods for model verification and validation by error analysis. It helps in finding answers to questions that may be crucial in deeper analyses. %% "deeper analysis" of what? %%
 
 * Does the model fit the data? Is it not missing any information?
 * Which model has better performance?
@@ -35,10 +33,7 @@ plot(lm.SR, which = 1:6, ask = FALSE)
 par(mfrow=c(1,1))
 ```
 
-However, this function can generate plots only for linear models and some of these plots are not extendable to other models. 
-At the same time, many algorithms, such as random forests or neural networks are often treated as black boxes and there are few or no methods for the analysis of errors in these models. 
-The auditor comes over these problems. It is a toolbox with validation plots that are model-agnostic, which means that they can be used regardless of the expected distribution of residuals. 
-The auditor provides flexible and consistent grammar for validation of any model class.
+However, this function can generate plots only for linear models and some of these plots are not extendable to other models. At the same time, many algorithms, such as random forests or neural networks are often treated as black boxes and there are few or no methods for errors analysis. The `auditor` comes as a solution to the problems. It is a toolbox with model-agnostic validation plots, which means that they can be used regardless of the expected distribution of residuals. The `auditor` provides flexible and consistent grammar for validation of any model class.
 
 
 # Data
@@ -55,7 +50,7 @@ head(dragons)
 ```
 
 ## Models
-First, we need models to compare. We selected linear regression and random forest because of their different structures. Linear regression model linear relationships between target response and independent variables. While random forest should be able to capture also non-linear relationships between variables.
+First, we need models to compare. We selected linear regression and random forest because of their different structures. Linear regression model linear relationships between target response and independent variables, while random forest should be able to capture also non-linear relationships between variables.
 
 ```{r}
 # Linear regression
@@ -90,7 +85,7 @@ rf_mr <- model_residual(rf_exp)
 
 ## Plots
 
-In the following section, we show individual plotting functions which demonstrate different aspects of residual analysis. We devote more attention to selected functions, but usage of each function is more or less similar.
+In the following section, we show individual plotting functions which demonstrate different aspects of residual analysis. We devote more attention to selected functions, but usage of each function is more or less similar. 
 
 
 ### Observed vs predicted
@@ -104,18 +99,19 @@ plot(rf_mr, lm_mr, type = "prediction", abline = TRUE)
 # plot_prediction(rf_mr, lm_mr, variable = "life_length")
 ```
 
-Function `plot_prediction` presents observed values on the x-axis. However, on the x-axis there may be values of any model variable or by index of observations (`variable = NULL`). 
+Function `plot_prediction` presents observed values on the x-axis. However, on the x-axis there may be values of any model variable or observations ordered by index (`variable = NULL`). 
 
 ```{r dodge-st, fig.show = "hold", out.width = "50%"}
 plot(rf_mr, lm_mr, variable = "scars", type = "prediction")
 plot(rf_mr, lm_mr, variable = "height", type = "prediction")
 ```
 
-As you can notice, on above plots, there is no relationship for variable `height` and predicted values while for increasing number of `scars`, model predictions also increase. This means that that model captured monotonic relationship between number of scars and length of life of dragon.
+As you can notice, on above plots, there is no relationship for variable `height` and predicted values while for increasing number of `scars` model predictions also increase. This means that that model captured monotonic relationship between number of scars and length of life of dragon.
+
 
 ### Residuals vs observed, fitted or variable values
 
-Next function (`plot_residual()`) shows residuals versus observed values. This plot is used to detect dependence of errors, unequal error variances, and outliers. For appropriate model, residuals should not show any functional dependency. Expected mean value should be equal to 0, regardless of $\hat{y}$ values. Structured arrangement of points suggests a problem with the model. It is worth looking at the observations that clearly differ from the others. If points on the plot are not randomly dispersed around the horizontal axis, it may be presumed that model is not appropriate for the data. 
+Next function (`plot_residual()`) shows residuals versus observed values. This plot is used to detect dependence of errors, unequal error variances, and outliers. For appropriate model, residuals should not show any functional dependency. Expected mean value should be equal to 0, regardless of $\hat{y}$ values, so any structured arrangement of points suggests a problem with the model. It is worth looking at the observations that clearly differ from the others. If points on the plot are not randomly dispersed around the horizontal axis, it may be presumed that model is not appropriate for the data. 
 
 ```{r}
 plot(lm_mr, rf_mr, type = "residual")
@@ -135,20 +131,16 @@ plot(rf_mr, lm_mr, type = "residual", variable = "scars")
 # plot_residual(rf_mr, lm_mr, variable = "scars")
 ```
 
-In all examples above, we can see that linear model is better fitted for the data than random forest, because for greater values of selected variables residuals are larger Additionaly, we can identify most outlying observations:
+In all examples above, we can see that linear model is better fitted for the data than random forest, because for the latter one greater values of selected variables residuals are also geater. Additionaly, we can identify most outlying observations:
 
 ``` {r echo = FALSE}
 plot_residual(rf_mr, variable = "_y_hat_", nlabel = 10)
 ```
 
-``` {r}
-# plot_residual(rf_mr, variable = "_y_hat_", nlabel = 10)
-```
-
 
 ### Density of residuals
 
-Residual density plot (`plot_residual_density()`) detects the incorrect behavior of residuals. On the plot, there are estimated densities of residuals. Their values are displayed as marks along the x axis. For some models, the expected shape of density derives from the model assumptions. For example, simple linear model residuals should be normally distributed. However, even if the model does not have an assumption about the distribution of residuals, such a plot may be informative. If most of the residuals are not concentrated around zero, it is likely that the model predictions are biased.
+Residual density plot (`plot_residual_density()`) detects the incorrect behavior of residuals. The funcion returns plot with estimated densities of residuals. Their values are displayed as marks along the x axis. For some models, the expected shape of density could be derived from the model assumptions. For example, simple linear model residuals should be normally distributed. However, even if the model does not have an assumption about the distribution of residuals residual density plot may be informative. If most of the residuals are not concentrated around zero, it is likely that the model predictions are biased.
 
 
 ```{r}
@@ -173,7 +165,7 @@ Residual boxplot (`plotResidualBoxplot()`) shows the distribution of the absolut
 - vertical line which reflects median, 
 - the whiskers which extend to the smallest and largest values, no further than 1.5 of interquartile.
 
-`auditor` adds sixth component to the boxplot which is the root mean square error (RMSE) measure, shown as `✕`. For the appropriate model, most of the residuals should lay near zero. A large spread of values indicates problems with a model. Comparing our two models we can see that random forest model is much more spreaded (worse) that linear one.
+`auditor` adds another component to the boxplot which is the root mean square error (RMSE) measure, shown as `✕`. For the appropriate model, most of the residuals should lay near zero %% to zdanie chyba nie tutaj albo inaczej, no bo nie blisko zera tylko ewentualnie wokół box'ów%%. A large spread of values indicates problems with a model. Comparing our two models we can see that random forest model is much more spreaded (worse) that linear one.
 
 
 ```{r}
@@ -184,11 +176,10 @@ plot(lm_mr, rf_mr, type = "residual_boxplot")
 ```
 
 
-
 ## More
 
-Plots presented in this post are only a small part of the auditor's features. To explore more, for example other types of plots and their interactive versions, we encourage you to visit the following sources;
+Plots presented in this post are only a small part of the auditor's capacities. Among other ploting functions focusing on residuals, there are also functions focusing on model preformance or model evaluation. What is more, most of the ploting functions are available in an interactive version (D3). We encourage you to visit the following sources:
 
 - [GitHub repository](https://github.com/ModelOriented/auditor) with the source code,
-- [a webpage](https://modeloriented.github.io/auditor/)  about auditor,
+- [a webpage](https://modeloriented.github.io/auditor/) about auditor,
 - [a preprint](https://arxiv.org/abs/1809.07763) about auditor.
