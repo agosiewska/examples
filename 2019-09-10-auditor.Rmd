@@ -13,7 +13,7 @@ knitr::opts_chunk$set(warning = FALSE)
 
 Machine learning is a hot topic nowadays, thus there is no need to convince anyone about its usefulness. ML models are successfully applied in biology, medicine, finance, and so on. With modern software, it is easy to train even a complex model that fits the training data and results in high accuracy on the test set. The problem arises when poorly verified model fails confronted with real-world data.
 
-In this post, we describe [`auditor`](https://github.com/ModelOriented/auditor) package for visual auditing of **residuals** of machine learning models. A residual is the difference between the observed value and the value predicted by a model. The auditor provides methods for model verification and validation by error analysis. It helps in finding answers to questions that may be crucial in deeper analyses. %% "deeper analysis" of what? %%
+In this post, we describe [`auditor`](https://github.com/ModelOriented/auditor) package for visual auditing of **residuals** of machine learning models. A residual is the difference between the observed value and the value predicted by a model. The auditor provides methods for model verification and validation by error analysis. It helps in finding answers to questions that may be crucial in deeper analyses of models.
 
 * Does the model fit the data? Is it not missing any information?
 * Which model has better performance?
@@ -165,7 +165,7 @@ Residual boxplot (`plotResidualBoxplot()`) shows the distribution of the absolut
 - vertical line which reflects median, 
 - the whiskers which extend to the smallest and largest values, no further than 1.5 of interquartile.
 
-`auditor` adds another component to the boxplot which is the root mean square error (RMSE) measure, shown as `✕`. For the appropriate model, most of the residuals should lay near zero %% to zdanie chyba nie tutaj albo inaczej, no bo nie blisko zera tylko ewentualnie wokół box'ów%%. A large spread of values indicates problems with a model. Comparing our two models we can see that random forest model is much more spreaded (worse) that linear one.
+`auditor` adds another component to the boxplot which is the root mean square error (RMSE) measure, shown as `✕`. For the appropriate model, box should lay near zero. A large spread of values indicates problems with a model. Comparing our two models we can see that random forest model is much more spreaded (worse) that linear one.
 
 
 ```{r}
@@ -178,7 +178,7 @@ plot(lm_mr, rf_mr, type = "residual_boxplot")
 
 ## More
 
-Plots presented in this post are only a small part of the auditor's capacities. Among other ploting functions focusing on residuals, there are also functions focusing on model preformance or model evaluation. What is more, most of the ploting functions are available in an interactive version (D3). We encourage you to visit the following sources:
+Plots presented in this post are only a small part of the auditor's capacities. Among other ploting functions focusing on residuals, there are also functions focusing on model preformance or model evaluation. What is more, most of the ploting functions are available in an interactive version (D3.js). We encourage you to visit the following sources:
 
 - [GitHub repository](https://github.com/ModelOriented/auditor) with the source code,
 - [a webpage](https://modeloriented.github.io/auditor/) about auditor,
